@@ -1,0 +1,7 @@
+.navigation {
+    padding: 2rem 10rem;
+
+    @media(max-width: 774px) {
+        padding: 2rem;
+    }
+}
