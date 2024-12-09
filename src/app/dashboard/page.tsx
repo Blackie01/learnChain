@@ -5,8 +5,8 @@ import Button from "../components/Button";
 import { courses, networks } from "@/utils/constants";
 
 const Dashboard = () => {
-  const [balance] = useState(() => localStorage.getItem("balance"));
-  const [chainId] = useState(() => localStorage.getItem("chainId") || "");
+  const [balance] = useState(typeof window !== "undefined" && global?.localStorage?.getItem("balance"));
+  const [chainId] = useState(typeof window !== "undefined" && global?.localStorage?.getItem("chainId"));
   const [network, setNetwork] = useState<string>("");
 
   useEffect(() => {

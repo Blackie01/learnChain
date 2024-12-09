@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 
 type ButtonProps = {
   children: ReactNode;
-  onClick?: any;
+  onClick?: () => void;
   smallButton?: boolean;
   disable?: boolean;
   maxWidth?: string;

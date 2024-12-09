@@ -7,14 +7,14 @@ import styles from "./navigation.module.css";
 
 const Navigation = () => {
   const [walletAddress] = useState(
-    () => localStorage.getItem("walletAddress") || "Connect wallet"
+    () => (typeof window !== "undefined" && global?.localStorage?.getItem("walletAddress")) || "Connect wallet"
   );
   const [openConnectWallet, setOpenConnectWallet] = useState(false);
   const handleConnectWalletModal = () => {
     setOpenConnectWallet(!openConnectWallet);
   };
   return (
-    <section
+    <div
       className={`${styles.navigation} w-full flex justify-between items-center`}
     >
       <Link href={"/"} className="text-[1.3rem]">
@@ -31,7 +31,7 @@ const Navigation = () => {
         openConnectWallet={openConnectWallet}
         setOpenConnectWallet={setOpenConnectWallet}
       />
-    </section>
+    </div>
   );
 };
 

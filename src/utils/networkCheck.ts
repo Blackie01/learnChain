@@ -3,7 +3,7 @@ export const isMetamaskInstalled = () => {
 };
 
 export const checkBlockchainNetwork = async () => {
-  const chainId = await window.ethereum.request({
+  const chainId = await window.ethereum?.request({
     method: "eth_chainId",
   });
   return chainId;

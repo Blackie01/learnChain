@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import Button from "./Button";
-import { ethers } from "ethers";
+import { Eip1193Provider, ethers } from "ethers";
 import { usePathname, useRouter } from "next/navigation";
 import {
   checkBlockchainNetwork,
@@ -21,12 +21,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname()
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [balance, setBalance] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [connectedWalletAddress] = useState(() =>
-    localStorage.getItem("walletAddress")
-  );
+  const [connectedWalletAddress] = useState(typeof window !== "undefined" && global?.localStorage?.getItem("walletAddress"));
 
   useEffect(() => {
     const authGuard = () => {
@@ -45,20 +40,18 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
     }
 
     try {
-      const accounts = await window.ethereum.request({
+      const accounts = await window.ethereum?.request({
         method: "eth_requestAccounts",
       });
 
       const address = accounts[0];
-      setWalletAddress(address);
       localStorage.setItem("walletAddress", address);
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
+    
+      const provider = new ethers.BrowserProvider(window.ethereum as Eip1193Provider);
 
       const balance = await provider.getBalance(address);
 
       const balanceInEth = ethers.formatEther(balance);
-      setBalance(parseFloat(balanceInEth).toFixed(4));
       localStorage.setItem("balance", parseFloat(balanceInEth).toFixed(4));
 
       const chainId = await checkBlockchainNetwork();
@@ -67,16 +60,14 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
       router.push("/dashboard");
     } catch (error) {
       alert("There is an error, please try again.");
+      console.error(error)
       router.push("/");
     }
   };
 
   const clearWalletState = () => {
-    setWalletAddress(null);
     localStorage.setItem("walletAddress", "");
-    setBalance(null);
     localStorage.setItem("balance", "");
-    setError(null);
   };
 
   const disconnectWallet = () => {
