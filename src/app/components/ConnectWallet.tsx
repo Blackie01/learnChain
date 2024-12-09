@@ -9,6 +9,7 @@ import {
   isMetamaskInstalled,
 } from "@/utils/networkCheck";
 import Link from "next/link";
+import Loader from "./Loader";
 
 interface ConnectWalletProps {
   openConnectWallet: boolean;
@@ -22,6 +23,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
   const router = useRouter();
   const pathname = usePathname()
   const [connectedWalletAddress] = useState(typeof window !== "undefined" && global?.localStorage?.getItem("walletAddress"));
+  const [loadingState, setLoadingState] = useState(false)
 
   useEffect(() => {
     const authGuard = () => {
@@ -34,7 +36,9 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
   }, []);
 
   const connectMetamask = async () => {
+    setLoadingState(true)
     if (!isMetamaskInstalled()) {
+      setLoadingState(false)
       alert("Metamask is not installed");
       return;
     }
@@ -58,10 +62,12 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
       localStorage.setItem("chainId", chainId);
 
       router.push("/dashboard");
+      setLoadingState(false)
     } catch (error) {
       alert("There is an error, please try again.");
       console.error(error)
       router.push("/");
+      setLoadingState(false)
     }
   };
 
@@ -71,11 +77,14 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
   };
 
   const disconnectWallet = () => {
+    setLoadingState(true)
     clearWalletState();
     if (pathname === '/') {
+      setLoadingState(false)
       window.location.reload();
     } else {
       router.push('/');
+      setLoadingState(false)
     }
   };
 
@@ -152,6 +161,8 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
 
   return (
     <Modal openModal={openConnectWallet} setOpenModal={setOpenConnectWallet}>
+      <div className="relative">
+      {loadingState && <div className="absolute -top-[1.5rem] left-[50%]"><Loader/></div>}
       {!connectedWalletAddress ? (
         <div className="flex text-[14px] gap-[5%] max-[600px]:flex-col">
           <div className="w-[60%] max-[600px]:w-full">
@@ -188,6 +199,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({
       ) : (
         <ConnectedWalletActions />
       )}
+      </div>
     </Modal>
   );
 };
